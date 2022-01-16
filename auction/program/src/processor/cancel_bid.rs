@@ -12,7 +12,7 @@ use crate::{
         assert_token_program_matches_package, close_token_account, create_or_allocate_account_raw,
         spl_token_transfer, TokenTransferParams,
     },
-    EXTENDED, PREFIX, BIDDER_POT_TOKEN,
+    BIDDER_POT_TOKEN, EXTENDED, PREFIX,
 };
 
 use super::AuctionState;
