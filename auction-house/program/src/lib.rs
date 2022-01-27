@@ -299,6 +299,19 @@ pub mod auction_house {
         let ata_program = &ctx.accounts.ata_program;
         let rent = &ctx.accounts.rent;
 
+        let derived_escrow_payment_bump = assert_derivation(
+            program_id,
+            escrow_payment_account,
+            &[
+                PREFIX.as_bytes(),
+                auction_house.key().as_ref(),
+                wallet.key().as_ref(),
+            ],
+        )?;
+        if derived_escrow_payment_bump != escrow_payment_bump {
+            return Err(ErrorCode::InvalidEscrowPaymentAccount.into());
+        }
+
         let auction_house_key = auction_house.key();
         let seeds = [
             PREFIX.as_bytes(),
@@ -1224,7 +1237,7 @@ pub struct Withdraw<'info> {
     wallet: UncheckedAccount<'info>,
     #[account(mut)]
     receipt_account: UncheckedAccount<'info>,
-    #[account(mut, seeds=[PREFIX.as_bytes(), auction_house.key().as_ref(), wallet.key().as_ref()], bump=escrow_payment_bump)]
+    #[account(mut)]
     escrow_payment_account: UncheckedAccount<'info>,
     treasury_mint: Account<'info, Mint>,
     authority: UncheckedAccount<'info>,
@@ -1409,4 +1422,6 @@ pub enum ErrorCode {
     NoValidSignerPresent,
     #[msg("BP must be less than or equal to 10000")]
     InvalidBasisPoints,
+    #[msg("Invalid Escrow Payment Account")]
+    InvalidEscrowPaymentAccount,
 }
