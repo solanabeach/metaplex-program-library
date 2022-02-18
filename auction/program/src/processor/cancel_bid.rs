@@ -180,7 +180,7 @@ pub fn cancel_bid(
 
     // Refuse to cancel if the auction ended and this person is a winning account.
     let winner_bid_index = auction.is_winner(accounts.bidder.key);
-    if auction.ended(clock.unix_timestamp)? && winner_bid_index.is_some() {
+    if (auction.state == AuctionState::Ended || auction.ended(clock.unix_timestamp)?) && winner_bid_index.is_some() {
         return Err(AuctionError::InvalidState.into());
     }
 
