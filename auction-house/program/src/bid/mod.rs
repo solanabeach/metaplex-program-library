@@ -139,7 +139,7 @@ pub fn bid_logic<'info>(
     token_size: u64,
     public: bool,
 ) -> ProgramResult {
-    assert_valid_trade_state(
+    let (_bump, bid_type) = assert_valid_trade_state(
         &wallet.key(),
         &auction_house,
         buyer_price,
@@ -149,6 +149,15 @@ pub fn bid_logic<'info>(
         &token_account.key(),
         trade_state_bump,
     )?;
+    msg!("{:?}", bid_type);
+    if !public && bid_type == BidType::Public {
+        msg!("Incorrect Bid Type");
+        return Err(ErrorCode::DerivedKeyInvalid.into());
+    }
+    if public && bid_type == BidType::Private {
+        msg!("Incorrect Bid Type");
+        return Err(ErrorCode::DerivedKeyInvalid.into());
+    }
     let auction_house_key = auction_house.key();
     let seeds = [
         PREFIX.as_bytes(),

@@ -490,6 +490,13 @@ pub fn assert_derivation(
     }
     Ok(bump)
 }
+
+#[derive(Eq, PartialEq, Debug)]
+pub enum BidType {
+    Public,
+    Private
+}
+
 pub fn assert_valid_trade_state<'a>(
     wallet: &Pubkey,
     auction_house: &Account<AuctionHouse>,
@@ -498,8 +505,8 @@ pub fn assert_valid_trade_state<'a>(
     trade_state: &AccountInfo,
     mint: &Pubkey,
     token_holder: &Pubkey,
-    ts_bump: u8,
-) -> Result<u8, ProgramError> {
+    ts_bump: u8
+) -> Result<(u8, BidType), ProgramError> {
     let ah_pubkey = &auction_house.key();
     let mint_bytes = mint.as_ref();
     let treasury_mint_bytes = auction_house.treasury_mint.as_ref();
@@ -536,15 +543,9 @@ pub fn assert_valid_trade_state<'a>(
             &token_size_bytes,
         ],
     );
-    msg!(
-        "{:?}, {:?}, {:?}",
-        canonical_public_bump,
-        canonical_bump,
-        ts_bump
-    );
     match (canonical_public_bump, canonical_bump) {
-        (Ok(public), Err(_)) if public == ts_bump => Ok(public),
-        (Err(_), Ok(bump)) if bump == ts_bump => Ok(bump),
+        (Ok(public), Err(_)) if public == ts_bump => Ok((public, BidType::Public)),
+        (Err(_), Ok(bump)) if bump == ts_bump => Ok((bump,BidType::Private)),
         _ => Err(ErrorCode::DerivedKeyInvalid.into()),
     }
 }

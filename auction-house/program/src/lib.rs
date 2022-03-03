@@ -17,7 +17,6 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount},
 };
 use spl_token::instruction::{approve, revoke};
-
 anchor_lang::declare_id!("hausS13jsjafwWwGqZTUQRmWyvyxn9EQpqMwV1PBBmk");
 
 #[program]

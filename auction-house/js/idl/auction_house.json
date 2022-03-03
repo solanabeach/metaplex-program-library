@@ -928,6 +928,22 @@
       }
     }
   ],
+  "types": [
+    {
+      "name": "BidType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Public"
+          },
+          {
+            "name": "Private"
+          }
+        ]
+      }
+    }
+  ],
   "errors": [
     {
       "code": 6000,
