@@ -567,6 +567,7 @@ pub fn assert_partial_buy_valid_trade_state(
     token_holder: &Pubkey,
     ts_bump: u8,
     partial_order_size: Option<u64>,
+    partial_order_price: Option<u64>,
 ) -> Result<u8> {
     let ah_pubkey = &auction_house.key();
     let mint_bytes = mint.as_ref();

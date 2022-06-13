@@ -17,10 +17,10 @@ use crate::{
 /// Accounts for the [`public_bid` handler](fn.public_bid.html).
 #[derive(Accounts)]
 #[instruction(
-    trade_state_bump: u8,
-    escrow_payment_bump: u8,
-    buyer_price: u64,
-    token_size: u64
+trade_state_bump: u8,
+escrow_payment_bump: u8,
+buyer_price: u64,
+token_size: u64
 )]
 pub struct PublicBuy<'info> {
     wallet: Signer<'info>,
@@ -40,13 +40,13 @@ pub struct PublicBuy<'info> {
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.key().as_ref(),
-            wallet.key().as_ref()
-        ],
-        bump = escrow_payment_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.key().as_ref(),
+    wallet.key().as_ref()
+    ],
+    bump = escrow_payment_bump
     )]
     escrow_payment_account: UncheckedAccount<'info>,
 
@@ -55,43 +55,43 @@ pub struct PublicBuy<'info> {
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     #[account(
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.creator.as_ref(),
-            auction_house.treasury_mint.as_ref()
-        ],
-        bump = auction_house.bump,
-        has_one = authority,
-        has_one = treasury_mint,
-        has_one = auction_house_fee_account
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.creator.as_ref(),
+    auction_house.treasury_mint.as_ref()
+    ],
+    bump = auction_house.bump,
+    has_one = authority,
+    has_one = treasury_mint,
+    has_one = auction_house_fee_account
     )]
     auction_house: Box<Account<'info, AuctionHouse>>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.key().as_ref(),
-            FEE_PAYER.as_bytes()
-        ],
-        bump = auction_house.fee_payer_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.key().as_ref(),
+    FEE_PAYER.as_bytes()
+    ],
+    bump = auction_house.fee_payer_bump
     )]
     auction_house_fee_account: UncheckedAccount<'info>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            wallet.key().as_ref(),
-            auction_house.key().as_ref(),
-            treasury_mint.key().as_ref(),
-            token_account.mint.as_ref(),
-            buyer_price.to_le_bytes().as_ref(),
-            token_size.to_le_bytes().as_ref()
-        ],
-        bump = trade_state_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    wallet.key().as_ref(),
+    auction_house.key().as_ref(),
+    treasury_mint.key().as_ref(),
+    token_account.mint.as_ref(),
+    buyer_price.to_le_bytes().as_ref(),
+    token_size.to_le_bytes().as_ref()
+    ],
+    bump = trade_state_bump
     )]
     buyer_trade_state: UncheckedAccount<'info>,
 
@@ -108,7 +108,6 @@ pub fn public_bid(
     escrow_payment_bump: u8,
     buyer_price: u64,
     token_size: u64,
-    partial_order_size: Option<u64>,
 ) -> Result<()> {
     bid_logic(
         ctx.accounts.wallet.to_owned(),
@@ -130,17 +129,16 @@ pub fn public_bid(
         buyer_price,
         token_size,
         true,
-        partial_order_size,
     )
 }
 
 /// Accounts for the [`auctioneer_public_bid` handler](fn.auctioneer_public_bid.html).
 #[derive(Accounts)]
 #[instruction(
-    trade_state_bump: u8,
-    escrow_payment_bump: u8,
-    buyer_price: u64,
-    token_size: u64
+trade_state_bump: u8,
+escrow_payment_bump: u8,
+buyer_price: u64,
+token_size: u64
 )]
 pub struct AuctioneerPublicBuy<'info> {
     wallet: Signer<'info>,
@@ -161,13 +159,13 @@ pub struct AuctioneerPublicBuy<'info> {
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.key().as_ref(),
-            wallet.key().as_ref()
-        ],
-        bump = escrow_payment_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.key().as_ref(),
+    wallet.key().as_ref()
+    ],
+    bump = escrow_payment_bump
     )]
     escrow_payment_account: UncheckedAccount<'info>,
 
@@ -179,55 +177,55 @@ pub struct AuctioneerPublicBuy<'info> {
     auctioneer_authority: Signer<'info>,
 
     #[account(
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.creator.as_ref(),
-            auction_house.treasury_mint.as_ref()
-        ],
-        bump = auction_house.bump,
-        has_one = authority,
-        has_one = treasury_mint,
-        has_one = auction_house_fee_account
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.creator.as_ref(),
+    auction_house.treasury_mint.as_ref()
+    ],
+    bump = auction_house.bump,
+    has_one = authority,
+    has_one = treasury_mint,
+    has_one = auction_house_fee_account
     )]
     auction_house: Box<Account<'info, AuctionHouse>>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.key().as_ref(),
-            FEE_PAYER.as_bytes()
-        ],
-        bump = auction_house.fee_payer_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.key().as_ref(),
+    FEE_PAYER.as_bytes()
+    ],
+    bump = auction_house.fee_payer_bump
     )]
     auction_house_fee_account: UncheckedAccount<'info>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            wallet.key().as_ref(),
-            auction_house.key().as_ref(),
-            treasury_mint.key().as_ref(),
-            token_account.mint.as_ref(),
-            buyer_price.to_le_bytes().as_ref(),
-            token_size.to_le_bytes().as_ref()
-        ],
-        bump = trade_state_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    wallet.key().as_ref(),
+    auction_house.key().as_ref(),
+    treasury_mint.key().as_ref(),
+    token_account.mint.as_ref(),
+    buyer_price.to_le_bytes().as_ref(),
+    token_size.to_le_bytes().as_ref()
+    ],
+    bump = trade_state_bump
     )]
     buyer_trade_state: UncheckedAccount<'info>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// The auctioneer PDA owned by Auction House storing scopes.
     #[account(
-        seeds = [
-            AUCTIONEER.as_bytes(),
-            auction_house.key().as_ref(),
-            auctioneer_authority.key().as_ref()
-        ],
-        bump = auction_house.auctioneer_pda_bump
+    seeds = [
+    AUCTIONEER.as_bytes(),
+    auction_house.key().as_ref(),
+    auctioneer_authority.key().as_ref()
+    ],
+    bump = auction_house.auctioneer_pda_bump
     )]
     pub ah_auctioneer_pda: UncheckedAccount<'info>,
 
@@ -244,7 +242,6 @@ pub fn auctioneer_public_bid(
     escrow_payment_bump: u8,
     buyer_price: u64,
     token_size: u64,
-    partial_order_size: Option<u64>,
 ) -> Result<()> {
     auctioneer_bid_logic(
         ctx.accounts.wallet.to_owned(),
@@ -268,18 +265,16 @@ pub fn auctioneer_public_bid(
         buyer_price,
         token_size,
         true,
-        partial_order_size,
     )
 }
 
 /// Accounts for the [`private_bid` handler](fn.private_bid.html).
 #[derive(Accounts)]
 #[instruction(
-    trade_state_bump: u8,
-    escrow_payment_bump: u8,
-    buyer_price: u64,
-    token_size: u64,
-    partial_order_size: Option<u64>
+trade_state_bump: u8,
+escrow_payment_bump: u8,
+buyer_price: u64,
+token_size: u64
 )]
 pub struct Buy<'info> {
     /// User wallet account.
@@ -307,13 +302,13 @@ pub struct Buy<'info> {
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// Buyer escrow payment account PDA.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.key().as_ref(),
-            wallet.key().as_ref()
-        ],
-        bump = escrow_payment_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.key().as_ref(),
+    wallet.key().as_ref()
+    ],
+    bump = escrow_payment_bump
     )]
     escrow_payment_account: UncheckedAccount<'info>,
 
@@ -323,47 +318,46 @@ pub struct Buy<'info> {
 
     /// Auction House instance PDA account.
     #[account(
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.creator.as_ref(),
-            auction_house.treasury_mint.as_ref()
-        ],
-        bump = auction_house.bump,
-        has_one = authority,
-        has_one = treasury_mint,
-        has_one = auction_house_fee_account
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.creator.as_ref(),
+    auction_house.treasury_mint.as_ref()
+    ],
+    bump = auction_house.bump,
+    has_one = authority,
+    has_one = treasury_mint,
+    has_one = auction_house_fee_account
     )]
     auction_house: Box<Account<'info, AuctionHouse>>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// Auction House instance fee account.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.key().as_ref(),
-            FEE_PAYER.as_bytes()
-        ],
-        bump = auction_house.fee_payer_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.key().as_ref(),
+    FEE_PAYER.as_bytes()
+    ],
+    bump = auction_house.fee_payer_bump
     )]
     auction_house_fee_account: UncheckedAccount<'info>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// Buyer trade state PDA.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            wallet.key().as_ref(),
-            auction_house.key().as_ref(),
-            token_account.key().as_ref(),
-            treasury_mint.key().as_ref(),
-            token_account.mint.as_ref(),
-            buyer_price.to_le_bytes().as_ref(),
-            token_size.to_le_bytes().as_ref(),
-            partial_order_size.unwrap_or(0u64).to_le_bytes().as_ref()
-        ],
-        bump = trade_state_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    wallet.key().as_ref(),
+    auction_house.key().as_ref(),
+    token_account.key().as_ref(),
+    treasury_mint.key().as_ref(),
+    token_account.mint.as_ref(),
+    buyer_price.to_le_bytes().as_ref(),
+    token_size.to_le_bytes().as_ref()
+    ],
+    bump = trade_state_bump
     )]
     buyer_trade_state: UncheckedAccount<'info>,
 
@@ -379,7 +373,6 @@ pub fn private_bid<'info>(
     escrow_payment_bump: u8,
     buyer_price: u64,
     token_size: u64,
-    partial_order_size: Option<u64>,
 ) -> Result<()> {
     bid_logic(
         ctx.accounts.wallet.to_owned(),
@@ -401,17 +394,16 @@ pub fn private_bid<'info>(
         buyer_price,
         token_size,
         false,
-        partial_order_size,
     )
 }
 
 /// Accounts for the [`auctioneer_private_bid` handler](fn.auctioneer_private_bid.html).
 #[derive(Accounts)]
 #[instruction(
-    trade_state_bump: u8,
-    escrow_payment_bump: u8,
-    buyer_price: u64,
-    token_size: u64
+trade_state_bump: u8,
+escrow_payment_bump: u8,
+buyer_price: u64,
+token_size: u64
 )]
 pub struct AuctioneerBuy<'info> {
     /// User wallet account.
@@ -427,7 +419,7 @@ pub struct AuctioneerBuy<'info> {
     transfer_authority: UncheckedAccount<'info>,
 
     /// Auction House instance treasury mint account.
-    treasury_mint: Account<'info, Mint>,
+    treasury_mint: Box<Account<'info, Mint>>,
 
     /// SPL token account.
     token_account: Box<Account<'info, TokenAccount>>,
@@ -439,13 +431,13 @@ pub struct AuctioneerBuy<'info> {
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// Buyer escrow payment account PDA.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.key().as_ref(),
-            wallet.key().as_ref()
-        ],
-        bump = escrow_payment_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.key().as_ref(),
+    wallet.key().as_ref()
+    ],
+    bump = escrow_payment_bump
     )]
     escrow_payment_account: UncheckedAccount<'info>,
 
@@ -458,58 +450,58 @@ pub struct AuctioneerBuy<'info> {
 
     /// Auction House instance PDA account.
     #[account(
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.creator.as_ref(),
-            auction_house.treasury_mint.as_ref()
-            ],
-        bump = auction_house.bump,
-        has_one = authority,
-        has_one = treasury_mint,
-        has_one = auction_house_fee_account
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.creator.as_ref(),
+    auction_house.treasury_mint.as_ref()
+    ],
+    bump = auction_house.bump,
+    has_one = authority,
+    has_one = treasury_mint,
+    has_one = auction_house_fee_account
     )]
     auction_house: Box<Account<'info, AuctionHouse>>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// Auction House instance fee account.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            auction_house.key().as_ref(),
-            FEE_PAYER.as_bytes()
-        ],
-        bump = auction_house.fee_payer_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    auction_house.key().as_ref(),
+    FEE_PAYER.as_bytes()
+    ],
+    bump = auction_house.fee_payer_bump
     )]
     auction_house_fee_account: UncheckedAccount<'info>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// Buyer trade state PDA.
     #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            wallet.key().as_ref(),
-            auction_house.key().as_ref(),
-            token_account.key().as_ref(),
-            treasury_mint.key().as_ref(),
-            token_account.mint.as_ref(),
-            buyer_price.to_le_bytes().as_ref(),
-            token_size.to_le_bytes().as_ref()
-        ],
-        bump = trade_state_bump
+    mut,
+    seeds = [
+    PREFIX.as_bytes(),
+    wallet.key().as_ref(),
+    auction_house.key().as_ref(),
+    token_account.key().as_ref(),
+    treasury_mint.key().as_ref(),
+    token_account.mint.as_ref(),
+    buyer_price.to_le_bytes().as_ref(),
+    token_size.to_le_bytes().as_ref()
+    ],
+    bump = trade_state_bump
     )]
     buyer_trade_state: UncheckedAccount<'info>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// The auctioneer PDA owned by Auction House storing scopes.
     #[account(
-        seeds = [
-            AUCTIONEER.as_bytes(),
-            auction_house.key().as_ref(),
-            auctioneer_authority.key().as_ref()
-        ],
-        bump = auction_house.auctioneer_pda_bump,
+    seeds = [
+    AUCTIONEER.as_bytes(),
+    auction_house.key().as_ref(),
+    auctioneer_authority.key().as_ref()
+    ],
+    bump = auction_house.auctioneer_pda_bump,
     )]
     pub ah_auctioneer_pda: UncheckedAccount<'info>,
 
@@ -525,13 +517,12 @@ pub fn auctioneer_private_bid<'info>(
     escrow_payment_bump: u8,
     buyer_price: u64,
     token_size: u64,
-    partial_order_size: Option<u64>,
 ) -> Result<()> {
     auctioneer_bid_logic(
         ctx.accounts.wallet.to_owned(),
         ctx.accounts.payment_account.to_owned(),
         ctx.accounts.transfer_authority.to_owned(),
-        ctx.accounts.treasury_mint.to_owned(),
+        *ctx.accounts.treasury_mint.to_owned(),
         *ctx.accounts.token_account.to_owned(),
         ctx.accounts.metadata.to_owned(),
         ctx.accounts.escrow_payment_account.to_owned(),
@@ -549,7 +540,6 @@ pub fn auctioneer_private_bid<'info>(
         buyer_price,
         token_size,
         false,
-        partial_order_size,
     )
 }
 
@@ -574,22 +564,13 @@ pub fn bid_logic<'info>(
     buyer_price: u64,
     token_size: u64,
     public: bool,
-    partial_order_size: Option<u64>,
 ) -> Result<()> {
     // If it has an auctioneer authority delegated must use auctioneer_* handler.
     if auction_house.has_auctioneer {
         return Err(AuctionHouseError::MustUseAuctioneerHandler.into());
     }
 
-    // todo: add error if partial_order and not more than one token
-
-    let calc_buyer_price = if let Some(partial_order) = partial_order_size {
-        (buyer_price / token_size) * partial_order
-    } else {
-        buyer_price
-    };
-
-    assert_partial_buy_valid_trade_state(
+    assert_valid_trade_state(
         &wallet.key(),
         &auction_house,
         buyer_price,
@@ -598,9 +579,7 @@ pub fn bid_logic<'info>(
         &token_account.mint.key(),
         &token_account.key(),
         trade_state_bump,
-        partial_order_size,
     )?;
-
     let auction_house_key = auction_house.key();
     let seeds = [
         PREFIX.as_bytes(),
@@ -642,11 +621,11 @@ pub fn bid_logic<'info>(
         assert_keys_equal(wallet.key(), payment_account.key())?;
 
         if escrow_payment_account.lamports()
-            < calc_buyer_price
-                .checked_add(rent.minimum_balance(escrow_payment_account.data_len()))
-                .ok_or(AuctionHouseError::NumericalOverflow)?
+            < buyer_price
+            .checked_add(rent.minimum_balance(escrow_payment_account.data_len()))
+            .ok_or(AuctionHouseError::NumericalOverflow)?
         {
-            let diff = calc_buyer_price
+            let diff = buyer_price
                 .checked_add(rent.minimum_balance(escrow_payment_account.data_len()))
                 .ok_or(AuctionHouseError::NumericalOverflow)?
                 .checked_sub(escrow_payment_account.lamports())
@@ -669,8 +648,8 @@ pub fn bid_logic<'info>(
         let escrow_payment_loaded: spl_token::state::Account =
             assert_initialized(&escrow_payment_account)?;
 
-        if escrow_payment_loaded.amount < calc_buyer_price {
-            let diff = calc_buyer_price
+        if escrow_payment_loaded.amount < buyer_price {
+            let diff = buyer_price
                 .checked_sub(escrow_payment_loaded.amount)
                 .ok_or(AuctionHouseError::NumericalOverflow)?;
             invoke(
@@ -735,7 +714,6 @@ pub fn bid_logic<'info>(
                     token_account.mint.as_ref(),
                     &buyer_price.to_le_bytes(),
                     &token_size.to_le_bytes(),
-                    &partial_order_size.unwrap_or(0u64).to_le_bytes(),
                     &[trade_state_bump],
                 ],
             )?;
@@ -774,7 +752,6 @@ pub fn auctioneer_bid_logic<'info>(
     buyer_price: u64,
     token_size: u64,
     public: bool,
-    partial_order_size: Option<u64>,
 ) -> Result<()> {
     let ah_auctioneer_pda_account = ah_auctioneer_pda.to_account_info();
 
@@ -841,8 +818,8 @@ pub fn auctioneer_bid_logic<'info>(
 
         if escrow_payment_account.lamports()
             < buyer_price
-                .checked_add(rent.minimum_balance(escrow_payment_account.data_len()))
-                .ok_or(AuctionHouseError::NumericalOverflow)?
+            .checked_add(rent.minimum_balance(escrow_payment_account.data_len()))
+            .ok_or(AuctionHouseError::NumericalOverflow)?
         {
             let diff = buyer_price
                 .checked_add(rent.minimum_balance(escrow_payment_account.data_len()))

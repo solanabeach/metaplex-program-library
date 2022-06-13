@@ -11,7 +11,8 @@ use crate::{constants::*, errors::*, utils::*, AuctionHouse, AuthorityScope, *};
     program_as_signer_bump: u8,
     buyer_price: u64,
     token_size: u64,
-    partial_order_size: Option<u64>
+    partial_order_size: Option<u64>,
+    partial_order_price: Option<u64>
 )]
 pub struct ExecuteSale<'info> {
     /// CHECK: Validated in execute_sale_logic.
@@ -118,20 +119,7 @@ pub struct ExecuteSale<'info> {
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
     /// Seller trade state PDA account encoding the sell order.
-    #[account(
-        mut,
-        seeds = [
-            PREFIX.as_bytes(),
-            seller.key().as_ref(),
-            auction_house.key().as_ref(),
-            token_account.key().as_ref(),
-            auction_house.treasury_mint.as_ref(),
-            token_mint.key().as_ref(),
-            &buyer_price.to_le_bytes(),
-            &token_size.to_le_bytes()
-        ],
-        bump=seller_trade_state.to_account_info().data.borrow()[0]
-    )]
+    #[account(mut)]
     pub seller_trade_state: UncheckedAccount<'info>,
 
     /// CHECK: Not dangerous. Account seeds checked in constraint.
@@ -199,6 +187,7 @@ pub fn execute_sale<'info>(
     buyer_price: u64,
     token_size: u64,
     partial_order_size: Option<u64>,
+    partial_order_price: Option<u64>
 ) -> Result<()> {
     let auction_house = &ctx.accounts.auction_house;
 
@@ -491,6 +480,7 @@ fn auctioneer_execute_sale_logic<'info>(
     let buyer_ts_data = &mut buyer_trade_state.try_borrow_mut_data()?;
     let seller_ts_data = &mut seller_trade_state.try_borrow_mut_data()?;
     let ts_bump = buyer_ts_data[0];
+
     assert_valid_trade_state(
         &buyer.key(),
         auction_house,
@@ -779,6 +769,7 @@ fn execute_sale_logic<'info>(
     buyer_price: u64,
     token_size: u64,
     partial_order_size: Option<u64>,
+    partial_order_price: Option<u64>
 ) -> Result<()> {
     let buyer = &ctx.accounts.buyer;
     let seller = &ctx.accounts.seller;
@@ -843,17 +834,43 @@ fn execute_sale_logic<'info>(
     let seller_ts_data = &mut seller_trade_state.try_borrow_mut_data()?;
     let ts_bump = buyer_ts_data[0];
 
-    assert_partial_buy_valid_trade_state(
-        &buyer.key(),
-        auction_house,
-        buyer_price,
-        token_size,
-        buyer_trade_state,
-        &token_mint.key(),
-        &token_account.key(),
-        ts_bump,
-        partial_order_size,
-    )?;
+    let size_price: Result<(u64,u64)> = match (partial_order_size, partial_order_price) {
+        (Some(size), Some(price)) => {
+            assert_valid_trade_state(
+                &buyer.key(),
+                auction_house,
+                price,
+                size,
+                buyer_trade_state,
+                &token_mint.key(),
+                &token_account.key(),
+                ts_bump,
+            )?;
+                (size, price)
+            /// other validation logic
+            /// validate that (buyer_price / token_size) * partial_order_size = partial_price
+            /// validate that token_account.amount >= partial_order_size
+            /// validate that token_account.delegates >= partial_order_size
+            /// if token_account.amount < token_size(original) -> fail if partial_order and partial size is not set
+        },
+        (None,None) => {
+            assert_valid_trade_state(
+                &buyer.key(),
+                auction_house,
+                buyer_price,
+                token_size,
+                buyer_trade_state,
+                &token_mint.key(),
+                &token_account.key(),
+                ts_bump,
+            )?;
+            (token_size, buyer_price)
+        }
+        _ => {
+            Err(AuctionHouseError::StatementFalse)
+        }
+    }?;
+
 
     if ts_bump == 0 || buyer_ts_data.len() == 0 || seller_ts_data.len() == 0 {
         return Err(AuctionHouseError::BothPartiesNeedToAgreeToSale.into());
@@ -1107,6 +1124,7 @@ fn execute_sale_logic<'info>(
     let token_account_data = TokenAccount::try_deserialize(&mut data.as_ref())?;
 
     if token_account_data.amount == 0 {
+        //revoke delegate
         let curr_seller_lamp = seller_trade_state.lamports();
         **seller_trade_state.lamports.borrow_mut() = 0;
         sol_memset(&mut *seller_ts_data, 0, TRADE_STATE_SIZE);
