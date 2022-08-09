@@ -522,11 +522,9 @@ pub fn calculate_supply_change<'a>(
                 return Err(MetadataError::EditionOverrideCannotBeZero.into());
             }
 
-            if edition > me_supply {
-                new_supply = edition;
-            } else {
-                new_supply = me_supply;
-            }
+            new_supply = me_supply
+                .checked_add(1)
+                .ok_or(MetadataError::NumericalOverflowError)?;
         } else {
             new_supply = me_supply
                 .checked_add(1)
@@ -538,6 +536,7 @@ pub fn calculate_supply_change<'a>(
                 return Err(MetadataError::MaxEditionsMintedAlready.into());
             }
         }
+
         // Doing old school serialization to protect CPU credits.
         let edition_data = &mut master_edition_account_info.data.borrow_mut();
         let output = array_mut_ref![edition_data, 0, MAX_MASTER_EDITION_LEN];

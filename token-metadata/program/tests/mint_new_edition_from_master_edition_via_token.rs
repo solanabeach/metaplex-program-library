@@ -298,4 +298,43 @@ mod mint_new_edition_from_master_edition_via_token {
         let result = test_edition_marker.create(&mut context).await.unwrap_err();
         assert_custom_error!(result, MetadataError::EditionOverrideCannotBeZero);
     }
+
+    #[tokio::test]
+    async fn fail_to_mint_edition_override_3() {
+        let mut context = program_test().start_with_context().await;
+        let test_metadata = Metadata::new();
+        let test_master_edition = MasterEditionV2::new(&test_metadata);
+        let test_edition_marker_1 = EditionMarker::new(&test_metadata, &test_master_edition, 1);
+        let test_edition_marker_2 = EditionMarker::new(&test_metadata, &test_master_edition, 3);
+        let test_edition_marker_3 = EditionMarker::new(&test_metadata, &test_master_edition, 4);
+
+        test_metadata
+            .create(
+                &mut context,
+                "Test".to_string(),
+                "TST".to_string(),
+                "uri".to_string(),
+                None,
+                10,
+                false,
+                0,
+            )
+            .await
+            .unwrap();
+
+        test_master_edition
+            .create(&mut context, Some(3))
+            .await
+            .unwrap();
+
+        test_edition_marker_1.create(&mut context).await.unwrap();
+
+        test_edition_marker_2.create(&mut context).await.unwrap();
+
+        test_edition_marker_3.create(&mut context).await.unwrap();
+
+        let master_edition = test_master_edition.get_data(&mut context).await;
+        assert_eq!(master_edition.supply, 2);
+        // assert_custom_error!(result, MetadataError::EditionOverrideCannotBeZero);
+    }
 }
